@@ -46,9 +46,10 @@ This project welcomes contributions and suggestions. See [CONTRIBUTING.md](CONTR
 |---------------------|---|
 | Mailing List | https://groups.google.com/forum/#!forum/oam-dev |
 | Meeting Information | [Bi-weekly (Starting Oct 22, 2019), Tuesdays 10:30AM PST](https://calendar.google.com/calendar?cid=dDk5YThyNGIwOWJyYTJxajNlbWI0a2FvdGtAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ)  |
-| Meeting Link | https://zoom.us/j/271516061  |
+| Community Meeting Link | https://aka.ms/OAM_zoomlink |
 | IM Channel       | https://gitter.im/oam-dev/  |
-| Meeting Notes       | https://docs.google.com/document/d/1nqdFEyULekyksFHtFvgvFAYE-0AMHKoS3RMnaKsarjs/edit?usp=sharing |
+| Meeting Notes | https://aka.ms/OAM_meetingnotes | 
+| Recordings | https://aka.ms/OAM_recordings | 
 | Twitter      | [@oam_dev](https://twitter.com/oam_dev) |
 
 ## Governance
