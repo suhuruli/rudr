@@ -18,8 +18,8 @@ RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add 
     && apt-get install -y kubectl
 
 # Install Helm 3
-RUN wget https://get.helm.sh/helm-v3.0.0-beta.5-linux-amd64.tar.gz \
-    && tar -zxvf helm-v3.0.0-beta.5-linux-amd64.tar.gz \
+RUN wget https://get.helm.sh/helm-v3.0.0-rc.2-linux-amd64.tar.gz \
+    && tar -zxvf helm-v3.0.0-rc.2-linux-amd64.tar.gz \
     && mv linux-amd64/helm /usr/local/bin/helm
 
 # Install rust
