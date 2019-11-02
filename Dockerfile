@@ -85,3 +85,32 @@ ENV RUST_LOG ${PACKAGE_NAME}=info
 RUN echo "./${PACKAGE_NAME}" > entrypoint.sh
 RUN chmod 0755 entrypoint.sh
 ENTRYPOINT ["/bin/sh", "./entrypoint.sh"]
+
+# ---- User Container ---- 
+
+FROM ubuntu:18.04 AS rudr-env
+
+# Avoid warnings by switching to noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install prereqs
+RUN apt-get update && apt-get install -y apt-transport-https curl wget gnupg2 git procps
+
+# Install k8s
+RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
+    && echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list \
+    && apt-get update \
+    && apt-get install -y kubectl
+
+# Install Helm 3
+RUN wget https://get.helm.sh/helm-v3.0.0-rc.2-linux-amd64.tar.gz \
+    && tar -zxvf helm-v3.0.0-rc.2-linux-amd64.tar.gz \
+    && mv linux-amd64/helm /usr/local/bin/helm
+
+# Install rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh  -s -- -y \
+    && apt install build-essential libssl-dev pkg-config -y \
+    && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+
+# Switch back to dialog for any ad-hoc use of apt-get
+ENV DEBIAN_FRONTEND=dialog

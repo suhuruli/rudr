@@ -73,6 +73,17 @@ docker-publish: docker-build-cx
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(HEALTHREPO):$(TAG) $(HEALTHREPO)-amd64:$(TAG) $(HEALTHREPO)-arm64:$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(HEALTHREPO):$(TAG)
 
+.PHONY: docker-build-dev
+docker-build-dev:
+	docker build -t $(REPO)-dev:$(TAG) --target=rudr-env --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim .
+
+.PHONY: docker-publish-dev
+docker-publish: docker-build-dev
+	docker login -u hydraoss -p ${hydraoss_secret}
+	docker push $(REPO)-dev:$(TAG)
+	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(REPO)-dev:$(TAG)
+	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(REPO)-dev:$(TAG)
+
 # Temporary while we get the ARM64 build time sorted.
 .PHONY: docker-publish-amd64
 docker-publish-amd64:
