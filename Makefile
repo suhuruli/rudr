@@ -1,4 +1,4 @@
-REPO = oamdev/rudr
+REPO = suhuruli/rudr
 TAG ?= latest
 ARCHS := amd64 arm64
 LOG_LEVEL := rudr=debug
@@ -58,24 +58,17 @@ docker-build-arm64:
 docker-build-amd64:
 	docker build -t $(REPO)-amd64:$(TAG) --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim .
 
-.PHONY: docker-publish
-docker-publish: docker-build-cx
-	docker login -u hydraoss -p ${hydraoss_secret}
-	docker push $(REPO)-amd64:$(TAG)
-	docker push $(REPO)-arm64:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(REPO):$(TAG) $(REPO)-amd64:$(TAG) $(REPO)-arm64:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(REPO):$(TAG)
-
-.PHONY: docker-build-dev
 docker-build-dev:
 	docker build -t $(REPO)-dev:$(TAG) --target=rudr-env --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim .
 
-.PHONY: docker-publish-dev
-docker-publish: docker-build-dev
-	docker login -u hydraoss -p ${hydraoss_secret}
+.PHONY: docker-publish
+docker-publish: docker-build-cx
+	docker login -u suhuruli -p ${hydraoss_secret}
+	docker push $(REPO)-amd64:$(TAG)
+	docker push $(REPO)-arm64:$(TAG)
 	docker push $(REPO)-dev:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(REPO)-dev:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(REPO)-dev:$(TAG)
+	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(REPO):$(TAG) $(REPO)-amd64:$(TAG) $(REPO)-arm64:$(TAG)
+	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(REPO):$(TAG)
 
 # Temporary while we get the ARM64 build time sorted.
 .PHONY: docker-publish-amd64
