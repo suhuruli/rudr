@@ -61,9 +61,12 @@ docker-build-amd64:
 	docker build -t $(REPO)-amd64:$(TAG) --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim .
 	docker build -t $(HEALTHREPO)-amd64:$(TAG) --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim --build-arg PACKAGE_NAME=healthscope .
 
+docker-build-dev:
+	docker build -t $(REPO)-dev:$(TAG) --target=rudr-env --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim .
+
 .PHONY: docker-publish
 docker-publish: docker-build-cx
-	docker login -u hydraoss -p ${hydraoss_secret}
+	docker login -u suhuruli -p ${hydraoss_secret}
 	docker push $(REPO)-amd64:$(TAG)
 	docker push $(HEALTHREPO)-amd64:$(TAG)
 	docker push $(REPO)-arm64:$(TAG)
@@ -72,17 +75,6 @@ docker-publish: docker-build-cx
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(REPO):$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(HEALTHREPO):$(TAG) $(HEALTHREPO)-amd64:$(TAG) $(HEALTHREPO)-arm64:$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(HEALTHREPO):$(TAG)
-
-.PHONY: docker-build-dev
-docker-build-dev:
-	docker build -t $(REPO)-dev:$(TAG) --target=rudr-env --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim .
-
-.PHONY: docker-publish-dev
-docker-publish: docker-build-dev
-	docker login -u hydraoss -p ${hydraoss_secret}
-	docker push $(REPO)-dev:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(REPO)-dev:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(REPO)-dev:$(TAG)
 
 # Temporary while we get the ARM64 build time sorted.
 .PHONY: docker-publish-amd64
