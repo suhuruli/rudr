@@ -1,5 +1,5 @@
-REPO = oamdev/rudr
-HEALTHREPO = oamdev/healthscope
+REPO = suhuruli/rudr
+HEALTHREPO = suhuruli/healthscope
 TAG ?= latest
 ARCHS := amd64 arm64
 LOG_LEVEL := rudr=debug
@@ -61,9 +61,15 @@ docker-build-amd64:
 	docker build -t $(REPO)-amd64:$(TAG) --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim .
 	docker build -t $(HEALTHREPO)-amd64:$(TAG) --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim --build-arg PACKAGE_NAME=healthscope .
 
+.PHONY: docker-build-dev
 docker-build-dev:
 	docker build -t $(REPO)-dev:$(TAG) --target=rudr-env --build-arg BUILDER_IMAGE=rust:1.38 --build-arg BASE_IMAGE=debian:stretch-slim .
 
+.PHONY: docker-publish-dev
+docker-publish-dev: 
+	docker login -u suhuruli -p ${hydraoss_secret}
+	docker push $(REPO)-dev:$(TAG)
+	
 .PHONY: docker-publish
 docker-publish: docker-build-cx
 	docker login -u suhuruli -p ${hydraoss_secret}
@@ -71,7 +77,7 @@ docker-publish: docker-build-cx
 	docker push $(HEALTHREPO)-amd64:$(TAG)
 	docker push $(REPO)-arm64:$(TAG)
 	docker push $(HEALTHREPO)-arm64:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(REPO):$(TAG) $(REPO)-amd64:$(TAG) $(REPO)-arm64:$(TAG)
+	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(REPO):$(TAG) $(REPO)-amd64:$(TAG) $(REPO)-arm64:$(TAG) $(REPO)-dev:$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(REPO):$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(HEALTHREPO):$(TAG) $(HEALTHREPO)-amd64:$(TAG) $(HEALTHREPO)-arm64:$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(HEALTHREPO):$(TAG)
@@ -81,7 +87,7 @@ docker-publish: docker-build-cx
 docker-publish-amd64:
 	docker push $(REPO)-amd64:$(TAG)
 	docker push $(HEALTHREPO)-amd64:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(REPO):$(TAG) $(REPO)-amd64:$(TAG)
+	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(REPO):$(TAG) $(REPO)-amd64:$(TAG) $(REPO)-dev:$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(REPO):$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create $(HEALTHREPO):$(TAG) $(HEALTHREPO)-amd64:$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push $(HEALTHREPO):$(TAG)
